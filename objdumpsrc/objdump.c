@@ -5,10 +5,32 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:34:12 2017 Baptiste Veyssiere
-** Last update Tue Feb 21 11:37:15 2017 Baptiste Veyssiere
+** Last update Wed Feb 22 01:37:24 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
+
+void	print_flags(uint32_t flags)
+{
+  int	values[] = {HAS_RELOC, EXEC_P, HAS_LINENO, HAS_DEBUG,
+		  HAS_SYMS, HAS_LOCALS, DYNAMIC, WP_TEXT,
+		  D_PAGED};
+  char*	strings[] = {"HAS_RELOC", "EXEC_P", "HAS_LINENO",
+		   "HAS_DEBUG", "HAS_SYMS", "HAS_LOCALS",
+		   "DYNAMIC", "WP_TEXT", "D_PAGED"};
+  int	start;
+
+  start = 1;
+  for (int i = 0; i < 9; i++)
+    if (flags & values[i])
+      {
+	if (!start)
+	  printf(", ");
+	printf("%s", strings[i]);
+	start = 0;
+      }
+  printf("\n");
+}
 
 static void	*getdata(char *filename)
 {

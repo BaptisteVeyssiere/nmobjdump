@@ -19,7 +19,8 @@ MKDIR		= mkdir -p
 
 OBJDUMPSRC	= objdumpsrc/objdump64.c \
 		objdumpsrc/objdump32.c \
-		objdumpsrc/objdump.c
+		objdumpsrc/objdump.c \
+		objdumpsrc/flags.c
 
 NMSRC		= nmsrc/main.c
 
