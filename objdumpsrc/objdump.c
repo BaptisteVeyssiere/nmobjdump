@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:34:12 2017 Baptiste Veyssiere
-** Last update Wed Feb 22 22:31:52 2017 Baptiste Veyssiere
+** Last update Thu Feb 23 00:47:14 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -81,9 +81,23 @@ int	objdump(char *filename, char *bin)
   else if (check_file(header, filename, bin))
     return (1);
   if (header->e_ident[EI_CLASS] == ELFCLASS32)
-    objdump32(data, filename);
+    {
+      if (check_name32(data))
+	{
+	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
+	  return (1);
+	}
+      objdump32(data, filename);
+    }
   else if (header->e_ident[EI_CLASS] == ELFCLASS64)
-    objdump64(data, filename);
+    {
+      if (check_name64(data))
+	{
+	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
+	  return (1);
+	}
+      objdump64(data, filename);
+    }
   return (0);
 }
 
