@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:34:12 2017 Baptiste Veyssiere
-** Last update Wed Feb 22 01:37:24 2017 Baptiste Veyssiere
+** Last update Wed Feb 22 03:41:04 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -32,7 +32,7 @@ void	print_flags(uint32_t flags)
   printf("\n");
 }
 
-static void	*getdata(char *filename)
+static void	*getdata(char *filename, char *bin)
 {
   FILE	*file;
   long	fsize;
@@ -40,7 +40,7 @@ static void	*getdata(char *filename)
 
   if (!(file = fopen(filename, "rb")))
     {
-      fprintf(stderr, "objdump: '%s': No such file\n", filename);
+      fprintf(stderr, "%s: '%s': No such file\n", bin, filename);
       return (NULL);
     }
   if (fseek(file, 0, SEEK_END) == -1 ||
@@ -54,7 +54,7 @@ static void	*getdata(char *filename)
   return (buffer);
 }
 
-static int	check_file(Elf32_Ehdr *header, char *file)
+static int	check_file(Elf32_Ehdr *header, char *file, char *bin)
 {
   if (header->e_ident[EI_MAG0] != ELFMAG0 ||
       header->e_ident[EI_MAG1] != ELFMAG1 ||
@@ -62,21 +62,21 @@ static int	check_file(Elf32_Ehdr *header, char *file)
       header->e_ident[EI_MAG3] != ELFMAG3 ||
       header->e_type == ET_NONE)
     {
-      fprintf(stderr, "objdump: %s: File format not recognized\n", file);
+      fprintf(stderr, "%s: %s: File format not recognized\n", bin, file);
       return (1);
     }
   return (0);
 }
 
-static int	objdump(char *filename)
+static int	objdump(char *filename, char *bin)
 {
   void		*data;
   Elf32_Ehdr	*header;
 
-  if (!(data = getdata(filename)))
+  if (!(data = getdata(filename, bin)))
     return (-1);
   header = (Elf32_Ehdr*)data;
-  if (check_file(header, filename))
+  if (check_file(header, filename, bin))
     return (1);
   if (header->e_ident[EI_CLASS] == ELFCLASS32)
     objdump32(data, filename);
@@ -88,15 +88,22 @@ static int	objdump(char *filename)
 int	main(int ac, char **av)
 {
   int	ret;
+  char	*bin;
 
   ret = 0;
+  if (ac < 1)
+    return (-1);
+  if (av[0][0] == '.')
+    bin = av[0] + 2;
+  else
+    bin = av[0];
   if (ac > 1)
     {
       for (int i = 1; i < ac; i++)
-	if (objdump(av[i]) == -1)
+	if (objdump(av[i], bin) == -1)
 	  ret = 1;
     }
-  else if (objdump("a.out") == -1)
+  else if (objdump("a.out", bin) == -1)
     ret = 1;
   return (ret);
 }

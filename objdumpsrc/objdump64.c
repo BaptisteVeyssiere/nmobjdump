@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:45:00 2017 Baptiste Veyssiere
-** Last update Wed Feb 22 02:02:17 2017 Baptiste Veyssiere
+** Last update Wed Feb 22 03:33:58 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -27,7 +27,7 @@ static void	get_flags(Elf64_Ehdr *data)
 
 static void	print_string(unsigned int i, char *buffer, unsigned int *newline)
 {
-  printf("  ");
+  printf(" ");
   while (*newline < i)
     {
       if (isprint(buffer[*newline]))
@@ -90,7 +90,7 @@ static void	print_sections64(Elf64_Ehdr *data)
 	  strcmp(name, ".symtab") == 0 ||
 	  strcmp(name, ".bss") == 0)
 	continue;
-      printf("Section content %s :\n", name);
+      printf("Contents of section %s:\n", name);
       print_section64(data, section_header);
     }
 }
@@ -113,6 +113,6 @@ void	objdump64(void *data, char *filename)
   printf("\n%s:     file format elf64-x86-64\n", filename);
   printf("architecture: %s, flags 0x%08x:\n", architecture, header->e_flags);
   print_flags(header->e_flags);
-  printf("start adress 0x%016x\n\n", (int)header->e_entry);
+  printf("start address 0x%016x\n\n", (int)header->e_entry);
   print_sections64(data);
 }
