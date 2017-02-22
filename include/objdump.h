@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 15:34:06 2017 Baptiste Veyssiere
-** Last update Wed Feb 22 01:47:28 2017 Baptiste Veyssiere
+** Last update Wed Feb 22 22:32:05 2017 Baptiste Veyssiere
 */
 
 #ifndef OBJDUMP_H_
@@ -20,14 +20,20 @@
 #include <ctype.h>
 #include <string.h>
 
+int	check_file(Elf32_Ehdr*, char*, char*);
+int	objdump(char*, char*);
+  
 void	objdump64(void*, char*);
 void	objdump32(void*, char*);
 
 void	print_flags(uint32_t);
 
-int	has_paged(Elf64_Ehdr *data);
-int	has_symtab(Elf64_Ehdr *data);
+int	has_paged64(Elf64_Ehdr*);
+int	has_symtab64(Elf64_Ehdr*);
+int	has_paged32(Elf32_Ehdr*);
+int	has_symtab32(Elf32_Ehdr*);
 
+int	is_arfile(void*, char*, char*);
 
 # ifndef __BFD_H_SEEN__
 #  define __BFD_H_SEEN__

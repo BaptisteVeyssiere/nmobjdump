@@ -1,18 +1,33 @@
 /*
-** objdump32.c for Project-Master in /home/veyssi_b/rendu/tek2/PSU/PSU_2016_nmobjdump
-**
+** objdump32.c for objdump32 in /home/veyssi_b/rendu/tek2/PSU/PSU_2016_nmobjdump/objdumpsrc
+** 
 ** Made by Baptiste Veyssiere
 ** Login   <veyssi_b@epitech.net>
-**
-** Started on  Tue Feb 21 11:54:14 2017 Baptiste Veyssiere
-** Last update Tue Feb 21 12:01:57 2017 Baptiste Veyssiere
+** 
+** Started on  Wed Feb 22 17:03:37 2017 Baptiste Veyssiere
+** Last update Thu Feb 23 00:03:02 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
 
+static void	get_flags(Elf32_Ehdr *data)
+{
+  if (data->e_type == ET_REL)
+    data->e_flags |= HAS_RELOC;
+  else if (data->e_type == ET_EXEC)
+    data->e_flags |= EXEC_P;
+  else if (data->e_type == ET_DYN)
+    data->e_flags |= DYNAMIC;
+
+  if (has_symtab32(data))
+    data->e_flags |= HAS_SYMS;
+  if (has_paged32(data))
+    data->e_flags |= D_PAGED;
+}
+
 static void	print_string(unsigned int i, char *buffer, unsigned int *newline)
 {
-  printf("  ");
+  printf(" ");
   while (*newline < i)
     {
       if (isprint(buffer[*newline]))
@@ -29,8 +44,8 @@ static void	print_string(unsigned int i, char *buffer, unsigned int *newline)
 
 static void	print_section32(Elf32_Ehdr *data, Elf32_Shdr section_header)
 {
-  char		*buffer;
-  int		address;
+  char	*buffer;
+  int	address;
   unsigned int	newline;
   unsigned int	i;
 
@@ -73,9 +88,14 @@ static void	print_sections32(Elf32_Ehdr *data)
       if (strcmp(name, ".strtab") == 0 ||
 	  strcmp(name, ".shstrtab") == 0 ||
 	  strcmp(name, ".symtab") == 0 ||
-	  strcmp(name, ".bss") == 0)
+	  strcmp(name, ".bss") == 0 ||
+	  strcmp(name, ".rela.text") == 0 ||
+	  strcmp(name, ".rela.eh_frame") == 0 ||
+	  strcmp(name, ".rel.text") == 0 ||
+	  strcmp(name, ".rel.eh_frame") == 0 ||
+	  section_header.sh_size == 0)
 	continue;
-      printf("Section content %s :\n", name);
+      printf("Contents of section %s:\n", name);
       print_section32(data, section_header);
     }
 }
@@ -86,14 +106,18 @@ void	objdump32(void *data, char *filename)
   char		*architecture;
 
   header = (Elf32_Ehdr*)data;
+  if (!header)
+    return ;
   if (header->e_machine == EM_X86_64)
     architecture = "i386:x86-64";
-  if (header->e_machine == EM_386)
+  else if (header->e_machine == EM_386)
     architecture = "i386";
   else
     architecture = "notf";
+  get_flags(header);
   printf("\n%s:     file format elf32-i386\n", filename);
   printf("architecture: %s, flags 0x%08x:\n", architecture, header->e_flags);
-  printf("start adress 0x%016x\n\n", (int)header->e_entry);
+  print_flags(header->e_flags);
+  printf("start address 0x%08x\n\n", (int)header->e_entry);
   print_sections32(data);
 }

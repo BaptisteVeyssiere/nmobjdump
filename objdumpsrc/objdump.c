@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:34:12 2017 Baptiste Veyssiere
-** Last update Wed Feb 22 03:41:04 2017 Baptiste Veyssiere
+** Last update Wed Feb 22 22:31:52 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -54,7 +54,7 @@ static void	*getdata(char *filename, char *bin)
   return (buffer);
 }
 
-static int	check_file(Elf32_Ehdr *header, char *file, char *bin)
+int	check_file(Elf32_Ehdr *header, char *file, char *bin)
 {
   if (header->e_ident[EI_MAG0] != ELFMAG0 ||
       header->e_ident[EI_MAG1] != ELFMAG1 ||
@@ -68,15 +68,17 @@ static int	check_file(Elf32_Ehdr *header, char *file, char *bin)
   return (0);
 }
 
-static int	objdump(char *filename, char *bin)
+int	objdump(char *filename, char *bin)
 {
   void		*data;
   Elf32_Ehdr	*header;
-
+  
   if (!(data = getdata(filename, bin)))
     return (-1);
   header = (Elf32_Ehdr*)data;
-  if (check_file(header, filename, bin))
+  if (is_arfile(data, filename, bin))
+    return (0); 
+  else if (check_file(header, filename, bin))
     return (1);
   if (header->e_ident[EI_CLASS] == ELFCLASS32)
     objdump32(data, filename);
