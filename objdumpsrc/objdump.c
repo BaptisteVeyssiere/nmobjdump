@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:34:12 2017 Baptiste Veyssiere
-** Last update Thu Feb 23 00:47:14 2017 Baptiste Veyssiere
+** Last update Fri Feb 24 00:16:52 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -72,28 +72,41 @@ int	objdump(char *filename, char *bin)
 {
   void		*data;
   Elf32_Ehdr	*header;
+  int		ret;
   
   if (!(data = getdata(filename, bin)))
     return (-1);
   header = (Elf32_Ehdr*)data;
   if (is_arfile(data, filename, bin))
-    return (0); 
+    return (0);
   else if (check_file(header, filename, bin))
     return (1);
   if (header->e_ident[EI_CLASS] == ELFCLASS32)
     {
-      if (check_name32(data))
+      ret = check_name32(data, filename);
+      if (ret == 1)
 	{
 	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
+	  return (1);
+	}
+      else if (ret == 2)
+	{
+	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
 	  return (1);
 	}
       objdump32(data, filename);
     }
   else if (header->e_ident[EI_CLASS] == ELFCLASS64)
     {
-      if (check_name64(data))
+      ret = check_name64(data, filename);
+      if (ret == 1)
 	{
 	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
+	  return (1);
+	}
+      else if (ret == 2)
+	{
+	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
 	  return (1);
 	}
       objdump64(data, filename);
@@ -109,10 +122,7 @@ int	main(int ac, char **av)
   ret = 0;
   if (ac < 1)
     return (-1);
-  if (av[0][0] == '.')
-    bin = av[0] + 2;
-  else
-    bin = av[0];
+  bin = av[0];
   if (ac > 1)
     {
       for (int i = 1; i < ac; i++)
