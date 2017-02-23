@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 00:36:52 2017 Baptiste Veyssiere
-** Last update Thu Feb 23 00:46:38 2017 Baptiste Veyssiere
+** Last update Thu Feb 23 18:08:41 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -15,7 +15,7 @@ int	check_name64(Elf64_Ehdr *data)
   Elf64_Shdr	*start;
   Elf64_Shdr	shstrtab_section;
   char		*namestring;
-  Elf64_Shdr	section_header;
+  Elf64_Shdr	*section_header;
   char		*name;
 
   start = (Elf64_Shdr*)((void*)data + data->e_shoff);
@@ -23,8 +23,12 @@ int	check_name64(Elf64_Ehdr *data)
   namestring = (char*)((void*)data + shstrtab_section.sh_offset);
   for (int i = 1; i < data->e_shnum; i++)
     {
-      section_header = start[i];
-      name = namestring + section_header.sh_name;
+      section_header = &(start[i]);
+      if (!section_header)
+	return (1);
+      if (section_header->sh_name > (uint32_t)(data->e_ehsize + data->e_phentsize * data->e_phnum + data->e_shentsize * data->e_shnum))
+	return (1);
+      name = namestring + section_header->sh_name;
       for (int i = 0; name[i]; i++)
 	if (!isprint(name[i]))
 	  return (1);
