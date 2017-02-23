@@ -5,10 +5,15 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 14:00:31 2017 Baptiste Veyssiere
-** Last update Thu Feb 23 16:32:25 2017 Baptiste Veyssiere
+** Last update Thu Feb 23 17:30:55 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
+
+static char	get_flag()
+{
+  return ('f');
+}
 
 static void	get_sections64(Elf64_Ehdr *data, Elf64_Shdr **strtab, Elf64_Shdr **symtab)
 {
@@ -33,15 +38,25 @@ static void	get_sections64(Elf64_Ehdr *data, Elf64_Shdr **strtab, Elf64_Shdr **s
     }
 }
 
-void	print_symbols(Elf64_Sym *symtab, char *strtab, void *data, int nbr)
+void	print_symbols(Elf64_Sym *symtab, char *strtab, Elf64_Ehdr *data, int nbr)
 {
-  char	*name;
-
-  (void)data;
+  char		*name;
+  char		flag;
+  Elf64_Shdr	*start;
+  
+  start = (Elf64_Shdr*)((void*)data + data->e_shoff);
+  (void)start;
   for (int i = 0; i < nbr; i++)
     {
       name = strtab + symtab[i].st_name;
-      printf("%016lx %s\n", symtab[i].st_value, name);
+      if (name[0] == 0 || symtab[i].st_info == STT_FILE)
+	continue;
+      flag = get_flag();
+      if (flag == 'U' || flag == 'w')
+	printf("%17c", ' ');
+      else
+	printf("%016lx ", symtab[i].st_value);
+      printf("%c %s\n", flag, name);
     }
 }
 
@@ -62,5 +77,5 @@ void	nm64(void *data, char *filename, char *bin)
       fprintf(stderr, "%s: %s: no symbols\n", bin, filename);
       return ;
     }
-  print_symbols((void*)data + symtab->sh_offset, (void*)data + strtab->sh_offset, data, symtab->sh_size / sizeof(Elf64_Shdr));
+  print_symbols((void*)data + symtab->sh_offset, (void*)data + strtab->sh_offset, data, symtab->sh_size / sizeof(Elf64_Sym));
 }

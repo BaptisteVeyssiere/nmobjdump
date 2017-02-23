@@ -7,9 +7,9 @@
 ## Started on  Wed May 18 21:26:30 2016 Baptiste veyssiere
 ##
 
-OBJDUMP		= my_objdump
+OBJDUMP		= objdump
 
-NM		= my_nm
+NM		= nm
 
 RM		= rm -f
 
@@ -45,11 +45,11 @@ OBJDUMPOBJ	= $(OBJDUMPSRC:$(OBJDUMPSRCDIR)/%.c=$(OBJDUMPOBJDIR)/%.o)
 CFLAGS	= -W -Werror -Wextra -Wall -Iinclude
 
 $(OBJDUMP): $(OBJDUMPOBJ)
-	@$(CC) -o $(OBJDUMP) $(OBJDUMPOBJ)
+	@$(CC) -o my_objdump $(OBJDUMPOBJ)
 	@echo "Linking complete!"
 
 $(NM): $(NMOBJ)
-	@$(CC) -o $(NM) $(NMOBJ)
+	@$(CC) -o my_nm $(NMOBJ)
 	@echo "Linking complete!"
 
 $(OBJDUMPOBJ): $(OBJDUMPOBJDIR)/%.o : $(OBJDUMPSRCDIR)/%.c
