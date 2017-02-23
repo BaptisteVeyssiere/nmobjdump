@@ -24,7 +24,11 @@ OBJDUMPSRC	= objdumpsrc/objdump64.c \
 		objdumpsrc/checks.c \
 		objdumpsrc/flags.c
 
-NMSRC		= nmsrc/main.c
+NMSRC		= nmsrc/nm64.c \
+		nmsrc/nm32.c \
+		nmsrc/nm.c \
+		nmsrc/ar_file_parser.c \
+		nmsrc/checks.c
 
 OBJDUMPSRCDIR	= objdumpsrc
 
