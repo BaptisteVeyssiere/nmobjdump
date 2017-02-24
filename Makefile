@@ -28,6 +28,7 @@ NMSRC		= nmsrc/nm64.c \
 		nmsrc/nm32.c \
 		nmsrc/nm.c \
 		nmsrc/ar_file_parser.c \
+		nmsrc/flag.c \
 		nmsrc/checks.c
 
 OBJDUMPSRCDIR	= objdumpsrc
@@ -70,8 +71,8 @@ clean:
 	@echo "Cleanup complete!"
 
 fclean: clean
-	@$(RM) $(OBJDUMP)
-	@$(RM) $(NM)
+	@$(RM) my_objdump
+	@$(RM) my_nm
 
 re: fclean all
 

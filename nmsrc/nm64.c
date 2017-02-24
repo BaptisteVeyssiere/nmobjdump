@@ -5,14 +5,56 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 14:00:31 2017 Baptiste Veyssiere
-** Last update Thu Feb 23 17:30:55 2017 Baptiste Veyssiere
+** Last update Fri Feb 24 01:17:33 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
 
-static char	get_flag()
+static int	get_lower(Elf64_Sym **tab, char *strtab, int nbr)
 {
-  return ('f');
+  int	ndx;
+  char	*name_right;
+  char	*name_left;
+
+  ndx = -1;
+  for (int i = 0; i < nbr; i++)
+    if (tab[i] != NULL)
+      {
+	ndx = i;
+	break;
+      }
+  if ((nbr - 1) == ndx || ndx == -1)
+    return (ndx);
+  for (int i = 1; i < nbr; i++)
+    {
+      if (tab[i] == NULL)
+	continue;
+      name_right = strtab + (tab[i])->st_name;
+      name_left = strtab + (tab[ndx])->st_name;
+      if (strcoll(name_left, name_right) > 0)
+	ndx = i;
+    }
+  return (ndx);
+}
+
+static void	sort_tab(Elf64_Sym **tab, char *strtab, int nbr)
+{
+  Elf64_Sym	**tmp;
+  int		j;
+  int		i;
+
+  if (!(tmp = malloc(sizeof(Elf64_Sym*) * (nbr + 1))))
+    return ;
+  tmp[nbr] = NULL;
+  j = -1;
+  while ((i = get_lower(tab, strtab, nbr)) > -1)
+    {
+      tmp[++j] = tab[i];
+      tab[i] = NULL;
+    }
+  for (i = 0; i < nbr; i++)
+    tab[i] = tmp[i];
+  free(tmp);
 }
 
 static void	get_sections64(Elf64_Ehdr *data, Elf64_Shdr **strtab, Elf64_Shdr **symtab)
@@ -43,19 +85,35 @@ void	print_symbols(Elf64_Sym *symtab, char *strtab, Elf64_Ehdr *data, int nbr)
   char		*name;
   char		flag;
   Elf64_Shdr	*start;
-  
+  Elf64_Sym	**sorted_symtab;
+  int		j;
+
+  if (!(sorted_symtab = malloc(sizeof(Elf64_Sym*) * (nbr + 1))))
+    return ;
+  sorted_symtab[nbr] = NULL;
   start = (Elf64_Shdr*)((void*)data + data->e_shoff);
   (void)start;
+  j = -1;
   for (int i = 0; i < nbr; i++)
     {
       name = strtab + symtab[i].st_name;
-      if (name[0] == 0 || symtab[i].st_info == STT_FILE)
+      if (name[0] != 0 && symtab[i].st_info != STT_FILE)
+	sorted_symtab[++j] = &(symtab[i]);
+    }
+  nbr = j + 1;
+  printf("%d\n", nbr);
+  sort_tab(sorted_symtab, strtab, nbr);
+  
+  for (int i = 0; i < nbr; i++)
+    {
+      name = strtab + sorted_symtab[i]->st_name;
+      if (name[0] == 0 || sorted_symtab[i]->st_info == STT_FILE)
 	continue;
       flag = get_flag();
       if (flag == 'U' || flag == 'w')
 	printf("%17c", ' ');
       else
-	printf("%016lx ", symtab[i].st_value);
+	printf("%016lx ", sorted_symtab[i]->st_value);
       printf("%c %s\n", flag, name);
     }
 }

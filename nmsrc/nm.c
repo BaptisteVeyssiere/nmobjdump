@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 13:54:45 2017 Baptiste Veyssiere
-** Last update Thu Feb 23 16:34:48 2017 Baptiste Veyssiere
+** Last update Fri Feb 24 00:52:05 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -50,6 +50,7 @@ int	nm(char *filename, char *bin)
 {
   void		*data;
   Elf32_Ehdr	*header;
+  int		ret;
   
   if (!(data = getdata(filename, bin)))
     return (-1);
@@ -60,18 +61,30 @@ int	nm(char *filename, char *bin)
     return (1);
   if (header->e_ident[EI_CLASS] == ELFCLASS32)
     {
-      if (check_name32(data))
+      ret = check_name32(data, filename);
+      if (ret == 1)
 	{
 	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
+	  return (1);
+	}
+      else if (ret == 2)
+	{
+	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
 	  return (1);
 	}
       nm32(data, filename, bin);
     }
   else if (header->e_ident[EI_CLASS] == ELFCLASS64)
     {
-      if (check_name64(data))
+      ret = check_name64(data, filename);
+      if (ret == 1)
 	{
 	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
+	  return (1);
+	}
+      else if (ret == 2)
+	{
+	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
 	  return (1);
 	}
       nm64(data, filename, bin);
@@ -87,10 +100,8 @@ int	main(int ac, char **av)
   ret = 0;
   if (ac < 1)
     return (-1);
-  if (av[0][0] == '.')
-    bin = av[0] + 2;
-  else
-    bin = av[0];
+  bin = av[0];
+  setlocale(LC_ALL, "");
   if (ac > 1)
     {
       for (int i = 1; i < ac; i++)

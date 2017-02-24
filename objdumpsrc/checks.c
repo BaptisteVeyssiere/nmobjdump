@@ -5,10 +5,9 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 00:36:52 2017 Baptiste Veyssiere
-** Last update Fri Feb 24 00:06:10 2017 Baptiste Veyssiere
+** Last update Fri Feb 24 00:24:55 2017 Baptiste Veyssiere
 */
 
-#include <malloc.h>
 #include "objdump.h"
 
 long	get_filesize(char *file)
