@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:34:12 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 15:02:38 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 16:37:02 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -71,7 +71,7 @@ int	objdump(char *filename, char *bin)
   void		*data;
   Elf32_Ehdr	*header;
   int		ret;
-  
+
   if (!(data = getdata(filename, bin)))
     return (-1);
   header = (Elf32_Ehdr*)data;
@@ -81,32 +81,14 @@ int	objdump(char *filename, char *bin)
     return (1);
   if (header->e_ident[EI_CLASS] == ELFCLASS32)
     {
-      ret = check_name32(data, filename);
-      if (ret == 1)
-	{
-	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
-	  return (1);
-	}
-      else if (ret == 2)
-	{
-	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
-	  return (1);
-	}
+      if (check_r((ret = check_name32(data, filename)), bin, filename))
+	return (1);
       objdump32(data, filename);
     }
   else if (header->e_ident[EI_CLASS] == ELFCLASS64)
     {
-      ret = check_name64(data, filename);
-      if (ret == 1)
-	{
-	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
-	  return (1);
-	}
-      else if (ret == 2)
-	{
-	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
-	  return (1);
-	}
+      if (check_r((ret = check_name64(data, filename)), bin, filename))
+	return (1);
       objdump64(data, filename);
     }
   return (0);

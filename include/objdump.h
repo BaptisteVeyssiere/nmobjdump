@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 15:34:06 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 15:33:23 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 16:39:08 2017 Baptiste Veyssiere
 */
 
 #ifndef OBJDUMP_H_
@@ -38,6 +38,8 @@ int	is_arfile(void*, char*, char*);
 
 int	check_name64(Elf64_Ehdr*, char*);
 int	check_name32(Elf32_Ehdr*, char*);
+
+int	check_r(int, char*, char*);
 
 # ifndef __BFD_H_SEEN__
 #  define __BFD_H_SEEN__

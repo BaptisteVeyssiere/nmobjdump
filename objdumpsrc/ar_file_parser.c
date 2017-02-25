@@ -1,11 +1,11 @@
 /*
 ** ar_file_parser.c for objdump in /home/veyssi_b/rendu/tek2/PSU/PSU_2016_nmobjdump
-** 
+**
 ** Made by Baptiste Veyssiere
 ** Login   <veyssi_b@epitech.net>
-** 
+**
 ** Started on  Wed Feb 22 21:05:20 2017 Baptiste Veyssiere
-** Last update Wed Feb 22 22:32:33 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 16:51:41 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -33,6 +33,8 @@ static int	get_header_size(void *data)
 
   if (!(string = malloc(16)))
     return (-1);
+  for (int i = 0; i < 16; i++)
+    string[i] = 0;
   for (int i = 0; i < 10 && ((char*)data)[i] != ' '; i++)
     string[i] = ((char*)(data))[i];
   size = atoi(string);
@@ -59,7 +61,7 @@ static int	ar_file_reader(void *data, char *bin)
   int	size;
   char	end;
   char	*file;
-  
+
   end = 0;
   while (end == 0)
     {

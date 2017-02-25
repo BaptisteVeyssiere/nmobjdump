@@ -1,11 +1,11 @@
 /*
 ** objdump32.c for objdump32 in /home/veyssi_b/rendu/tek2/PSU/PSU_2016_nmobjdump/objdumpsrc
-** 
+**
 ** Made by Baptiste Veyssiere
 ** Login   <veyssi_b@epitech.net>
-** 
+**
 ** Started on  Wed Feb 22 17:03:37 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 15:12:08 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 16:35:43 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -77,14 +77,12 @@ static void	print_section32(Elf32_Ehdr *data, Elf32_Shdr section_header)
 static void	print_sections32(Elf32_Ehdr *data)
 {
   Elf32_Shdr	*start;
-  Elf32_Shdr	shstrtab_section;
   char		*namestring;
   Elf32_Shdr	section_header;
   char		*name;
 
   start = (Elf32_Shdr*)((void*)data + data->e_shoff);
-  shstrtab_section = start[data->e_shstrndx];
-  namestring = (char*)((void*)data + shstrtab_section.sh_offset);
+  namestring = (char*)((void*)data + start[data->e_shstrndx].sh_offset);
   for (int i = 1; i < data->e_shnum; i++)
     {
       section_header = start[i];

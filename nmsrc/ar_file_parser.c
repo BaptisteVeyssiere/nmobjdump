@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Thu Feb 23 14:02:14 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 15:34:45 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 18:23:35 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -34,6 +34,8 @@ static int	get_header_size(void *data)
 
   if (!(string = malloc(16)))
     return (-1);
+  for (int i = 0; i < 16; i++)
+    string[i] = 0;
   for (int i = 0; i < 10 && ((char*)data)[i] != ' '; i++)
     string[i] = ((char*)(data))[i];
   size = atoi(string);
