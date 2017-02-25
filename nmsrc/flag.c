@@ -1,16 +1,16 @@
 /*
 ** flag.c for nm in /home/veyssi_b/rendu/tek2/PSU/PSU_2016_nmobjdump
-** 
+**
 ** Made by Baptiste Veyssiere
 ** Login   <veyssi_b@epitech.net>
-** 
+**
 ** Started on  Fri Feb 24 00:39:41 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 02:24:59 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 16:25:43 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
 
-char	get_flag64(Elf64_Sym *symtab, Elf64_Shdr *shdr)
+char	get_flag64(Elf64_Sym *symtab, Elf64_Shdr *start)
 {
   char	c;
 
@@ -22,7 +22,8 @@ char	get_flag64(Elf64_Sym *symtab, Elf64_Shdr *shdr)
       if (symtab->st_shndx == SHN_UNDEF)
 	c = 'w';
     }
-  else if (ELF64_ST_BIND(symtab->st_info) == STB_WEAK && ELF64_ST_TYPE(symtab->st_info))
+  else if (ELF64_ST_BIND(symtab->st_info) == STB_WEAK &&
+	   ELF64_ST_TYPE(symtab->st_info))
     {
       c = 'V';
       if (symtab->st_shndx == SHN_UNDEF)
@@ -34,32 +35,32 @@ char	get_flag64(Elf64_Sym *symtab, Elf64_Shdr *shdr)
     c = 'A';
   else if (symtab->st_shndx == SHN_COMMON)
     c = 'C';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_NOBITS &&
-	   shdr[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+  else if (start[symtab->st_shndx].sh_type == SHT_NOBITS &&
+	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
     c = 'B';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   shdr[symtab->st_shndx].sh_flags == SHF_ALLOC)
+  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
+	   start[symtab->st_shndx].sh_flags == SHF_ALLOC)
     c = 'R';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   shdr[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
+	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
     c = 'D';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   shdr[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
+	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
     c = 'T';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_DYNAMIC)
+  else if (start[symtab->st_shndx].sh_type == SHT_DYNAMIC)
     c = 'D';
   else
     c = '?';
   if (ELF64_ST_BIND(symtab->st_info) == STB_LOCAL && c != '?')
     c += 32;
-  if ((shdr[symtab->st_shndx].sh_type == SHT_FINI_ARRAY ||
-       shdr[symtab->st_shndx].sh_type == SHT_INIT_ARRAY) &&
-      shdr[symtab->st_shndx].sh_flags == 3)
+  if ((start[symtab->st_shndx].sh_type == SHT_FINI_ARRAY ||
+       start[symtab->st_shndx].sh_type == SHT_INIT_ARRAY) &&
+      start[symtab->st_shndx].sh_flags == 3)
     c = 't';
-  return c;
+  return (c);
 }
 
-char	get_flag32(Elf32_Sym *symtab, Elf32_Shdr *shdr)
+char	get_flag32(Elf32_Sym *symtab, Elf32_Shdr *start)
 {
   char	c;
 
@@ -71,7 +72,8 @@ char	get_flag32(Elf32_Sym *symtab, Elf32_Shdr *shdr)
       if (symtab->st_shndx == SHN_UNDEF)
 	c = 'w';
     }
-  else if (ELF32_ST_BIND(symtab->st_info) == STB_WEAK && ELF32_ST_TYPE(symtab->st_info))
+  else if (ELF32_ST_BIND(symtab->st_info) == STB_WEAK &&
+	   ELF32_ST_TYPE(symtab->st_info))
     {
       c = 'V';
       if (symtab->st_shndx == SHN_UNDEF)
@@ -83,27 +85,27 @@ char	get_flag32(Elf32_Sym *symtab, Elf32_Shdr *shdr)
     c = 'A';
   else if (symtab->st_shndx == SHN_COMMON)
     c = 'C';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_NOBITS &&
-	   shdr[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+  else if (start[symtab->st_shndx].sh_type == SHT_NOBITS &&
+	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
     c = 'B';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   shdr[symtab->st_shndx].sh_flags == SHF_ALLOC)
+  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
+	   start[symtab->st_shndx].sh_flags == SHF_ALLOC)
     c = 'R';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   shdr[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
+	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
     c = 'D';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   shdr[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
+	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
     c = 'T';
-  else if (shdr[symtab->st_shndx].sh_type == SHT_DYNAMIC)
+  else if (start[symtab->st_shndx].sh_type == SHT_DYNAMIC)
     c = 'D';
   else
     c = '?';
   if (ELF32_ST_BIND(symtab->st_info) == STB_LOCAL && c != '?')
     c += 32;
-  if ((shdr[symtab->st_shndx].sh_type == SHT_FINI_ARRAY ||
-       shdr[symtab->st_shndx].sh_type == SHT_INIT_ARRAY) &&
-      shdr[symtab->st_shndx].sh_flags == 3)
+  if ((start[symtab->st_shndx].sh_type == SHT_FINI_ARRAY ||
+       start[symtab->st_shndx].sh_type == SHT_INIT_ARRAY) &&
+      start[symtab->st_shndx].sh_flags == 3)
     c = 't';
-  return c;
+  return (c);
 }

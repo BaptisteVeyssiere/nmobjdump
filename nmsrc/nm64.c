@@ -1,11 +1,11 @@
 /*
 ** nm64.c for nm in /home/veyssi_b/rendu/tek2/PSU/PSU_2016_nmobjdump/nmsrc
-** 
+**
 ** Made by Baptiste Veyssiere
 ** Login   <veyssi_b@epitech.net>
-** 
+**
 ** Started on  Thu Feb 23 14:00:31 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 14:23:39 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 16:19:46 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -57,14 +57,15 @@ static void	sort_tab(Elf64_Sym **tab, char *strtab, int nbr)
   free(tmp);
 }
 
-static void	get_sections64(Elf64_Ehdr *data, Elf64_Shdr **strtab, Elf64_Shdr **symtab)
+static void	get_sections64(Elf64_Ehdr *data, Elf64_Shdr **strtab,
+			       Elf64_Shdr **symtab)
 {
   Elf64_Shdr	*start;
   Elf64_Shdr	shstrtab_section;
   char		*namestring;
   Elf64_Shdr	section_header;
   char		*name;
-  
+
 
   start = (Elf64_Shdr*)((void*)data + data->e_shoff);
   shstrtab_section = start[data->e_shstrndx];
@@ -80,10 +81,10 @@ static void	get_sections64(Elf64_Ehdr *data, Elf64_Shdr **strtab, Elf64_Shdr **s
     }
 }
 
-static void	print_symbols(Elf64_Sym *symtab, char *strtab, Elf64_Ehdr *data, int nbr)
+static void	print_symbols(Elf64_Sym *symtab, char *strtab,
+			      Elf64_Ehdr *data, int nbr)
 {
   char		*name;
-  char		flag;
   Elf64_Shdr	*start;
   Elf64_Sym	**sorted_symtab;
   int		j;
@@ -92,7 +93,6 @@ static void	print_symbols(Elf64_Sym *symtab, char *strtab, Elf64_Ehdr *data, int
     return ;
   sorted_symtab[nbr] = NULL;
   start = (Elf64_Shdr*)((void*)data + data->e_shoff);
-  (void)start;
   j = -1;
   for (int i = 0; i < nbr; i++)
     {
@@ -102,18 +102,12 @@ static void	print_symbols(Elf64_Sym *symtab, char *strtab, Elf64_Ehdr *data, int
     }
   nbr = j + 1;
   sort_tab(sorted_symtab, strtab, nbr);
-  
   for (int i = 0; i < nbr; i++)
     {
       name = strtab + sorted_symtab[i]->st_name;
       if (name[0] == 0 || sorted_symtab[i]->st_info == STT_FILE)
 	continue;
-      flag = get_flag64(sorted_symtab[i], start);
-      if (flag == 'U' || flag == 'w')
-	printf("%17c", ' ');
-      else
-	printf("%016lx ", sorted_symtab[i]->st_value);
-      printf("%c %s\n", flag, name);
+      printer64(sorted_symtab[i], start, name);
     }
 }
 
@@ -122,7 +116,7 @@ void	nm64(void *data, char *filename, char *bin)
   Elf64_Ehdr	*header;
   Elf64_Shdr	*symtab;
   Elf64_Shdr	*strtab;
-  
+
   symtab = NULL;
   strtab = NULL;
   header = (Elf64_Ehdr*)data;
@@ -134,5 +128,6 @@ void	nm64(void *data, char *filename, char *bin)
       fprintf(stdout, "%s: %s: no symbols\n", bin, filename);
       return ;
     }
-  print_symbols((void*)data + symtab->sh_offset, (void*)data + strtab->sh_offset, data, symtab->sh_size / sizeof(Elf64_Sym));
+  print_symbols((void*)data + symtab->sh_offset, (void*)data +
+		strtab->sh_offset, data, symtab->sh_size / sizeof(Elf64_Sym));
 }

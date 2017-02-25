@@ -1,11 +1,11 @@
 /*
 ** nm.c for nm in /home/veyssi_b/rendu/tek2/PSU/PSU_2016_nmobjdump/nmsrc
-** 
+**
 ** Made by Baptiste Veyssiere
 ** Login   <veyssi_b@epitech.net>
-** 
+**
 ** Started on  Thu Feb 23 13:54:45 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 15:22:13 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 15:50:03 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -44,51 +44,46 @@ int	check_file(Elf32_Ehdr *header, char *file, char *bin)
   return (0);
 }
 
+static int	check_r(int ret, char *bin, char *filename, int multi)
+{
+  if (ret == 1)
+    {
+      fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
+      return (1);
+    }
+  else if (ret == 2)
+    {
+      fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
+      return (1);
+    }
+  if (multi)
+    printf("\n%s:\n", filename);
+  return (0);
+}
+
 int	nm(char *filename, char *bin, int multi)
 {
   void		*data;
   Elf32_Ehdr	*header;
   int		ret;
-  
+
   if (!(data = getdata(filename, bin)))
     return (-1);
   header = (Elf32_Ehdr*)data;
   if (is_arfile(data, bin, multi, filename))
-    return (0); 
+    return (0);
   else if (check_file(header, filename, bin))
     return (1);
   if (header->e_ident[EI_CLASS] == ELFCLASS32)
     {
-      ret = check_name32(data, filename);
-      if (ret == 1)
-	{
-	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
-	  return (1);
-	}
-      else if (ret == 2)
-	{
-	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
-	  return (1);
-	}
-      if (multi)
-	printf("\n%s:\n", filename);
+      if (check_r((ret = check_name32(data, filename)), bin, filename, multi))
+	return (1);
       nm32(data, filename, bin);
     }
   else if (header->e_ident[EI_CLASS] == ELFCLASS64)
     {
-      ret = check_name64(data, filename);
-      if (ret == 1)
-	{
-	  fprintf(stderr, "%s: %s: File format not recognized\n", bin, filename);
-	  return (1);
-	}
-      else if (ret == 2)
-	{
-	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
-	  return (1);
-	}
-      if (multi)
-	printf("\n%s:\n", filename);
+      if (check_r((ret = check_name64(data, filename)), bin, filename, multi))
+	return (1);
       nm64(data, filename, bin);
     }
   return (0);

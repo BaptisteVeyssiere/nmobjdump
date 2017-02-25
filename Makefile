@@ -29,6 +29,7 @@ NMSRC		= nmsrc/nm64.c \
 		nmsrc/nm.c \
 		nmsrc/ar_file_parser.c \
 		nmsrc/flag.c \
+		nmsrc/printer.c \
 		nmsrc/checks.c
 
 OBJDUMPSRCDIR	= objdumpsrc

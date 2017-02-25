@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Thu Feb 23 14:02:52 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 15:33:01 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 16:21:40 2017 Baptiste Veyssiere
 */
 
 #ifndef NM_H_
@@ -35,5 +35,8 @@ int	check_name32(Elf32_Ehdr*, char*);
 
 char	get_flag64(Elf64_Sym*, Elf64_Shdr*);
 char	get_flag32(Elf32_Sym*, Elf32_Shdr*);
+
+void	printer64(Elf64_Sym*, Elf64_Shdr*, char*);
+void	printer32(Elf32_Sym*, Elf32_Shdr*, char*);
 
 #endif /* !NM_H_ */
