@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Wed Feb 22 01:29:29 2017 Baptiste Veyssiere
-** Last update Thu Feb 23 00:37:55 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 19:22:42 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -25,6 +25,7 @@ int	has_symtab64(Elf64_Ehdr *data)
     {
       section_header = start[i];
       name = namestring + section_header.sh_name;
+      (void)name;
       if (section_header.sh_type == SHT_SYMTAB &&
 	  strcmp(name, ".symtab") == 0)
 	return (1);

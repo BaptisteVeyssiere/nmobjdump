@@ -5,85 +5,30 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Fri Feb 24 00:39:41 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 18:18:55 2017 Baptiste Veyssiere
+** Last update Sun Feb 26 00:06:19 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
 
-char	get_global_flags64(Elf64_Sym *symtab, Elf64_Shdr *start)
+char	get_global_flags(uint16_t index, uint32_t type, uint32_t flags)
 {
-  char	symbol;
+  char		symbol;
 
-  if (symtab->st_shndx == SHN_UNDEF)
+  if (index == SHN_UNDEF)
     symbol = 'U';
-  else if (symtab->st_shndx == SHN_ABS)
+  else if (index == SHN_ABS)
     symbol = 'A';
-  else if (symtab->st_shndx == SHN_COMMON)
+  else if (index == SHN_COMMON)
     symbol = 'C';
-  else if (start[symtab->st_shndx].sh_type == SHT_NOBITS &&
-	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+  else if (type == SHT_NOBITS && flags == (SHF_ALLOC | SHF_WRITE))
     symbol = 'B';
-  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   start[symtab->st_shndx].sh_flags == SHF_ALLOC)
+  else if (type == SHT_PROGBITS && flags == SHF_ALLOC)
     symbol = 'R';
-  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+  else if (type == SHT_PROGBITS && flags == (SHF_ALLOC | SHF_WRITE))
     symbol = 'D';
-  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+  else if (type == SHT_PROGBITS && flags == (SHF_ALLOC | SHF_EXECINSTR))
     symbol = 'T';
-  else if (start[symtab->st_shndx].sh_type == SHT_DYNAMIC)
-    symbol = 'D';
-  else
-    symbol = '?';
-  return (symbol);
-}
-
-char	get_flag64(Elf64_Sym *symtab, Elf64_Shdr *start)
-{
-  char	symbol;
-
-  if (ELF64_ST_BIND(symtab->st_info) == STB_GNU_UNIQUE)
-     symbol = 'u';
-  if (ELF64_ST_BIND(symtab->st_info) == STB_WEAK)
-    symbol = symtab->st_shndx == SHN_UNDEF ? 'w' : 'W';
-  else if (ELF64_ST_BIND(symtab->st_info) == STB_WEAK &&
-	   ELF64_ST_TYPE(symtab->st_info))
-    symbol = symtab->st_shndx == SHN_UNDEF ? 'v' : 'V';
-  else
-    symbol = get_global_flags64(symtab, start);
-  if (ELF64_ST_BIND(symtab->st_info) == STB_LOCAL && symbol != '?')
-    symbol += 32;
-  if ((start[symtab->st_shndx].sh_type == SHT_FINI_ARRAY ||
-       start[symtab->st_shndx].sh_type == SHT_INIT_ARRAY) &&
-      start[symtab->st_shndx].sh_flags == 3)
-    symbol = 't';
-  return (symbol);
-}
-
-char	get_global_flags32(Elf32_Sym *symtab, Elf32_Shdr *start)
-{
-  char	symbol;
-
-  if (symtab->st_shndx == SHN_UNDEF)
-    symbol = 'U';
-  else if (symtab->st_shndx == SHN_ABS)
-    symbol = 'A';
-  else if (symtab->st_shndx == SHN_COMMON)
-    symbol = 'C';
-  else if (start[symtab->st_shndx].sh_type == SHT_NOBITS &&
-	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
-    symbol = 'B';
-  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   start[symtab->st_shndx].sh_flags == SHF_ALLOC)
-    symbol = 'R';
-  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
-    symbol = 'D';
-  else if (start[symtab->st_shndx].sh_type == SHT_PROGBITS &&
-	   start[symtab->st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
-    symbol = 'T';
-  else if (start[symtab->st_shndx].sh_type == SHT_DYNAMIC)
+  else if (type == SHT_DYNAMIC)
     symbol = 'D';
   else
     symbol = '?';
@@ -92,22 +37,55 @@ char	get_global_flags32(Elf32_Sym *symtab, Elf32_Shdr *start)
 
 char	get_flag32(Elf32_Sym *symtab, Elf32_Shdr *start)
 {
-  char	symbol;
+  char		symbol;
+  uint16_t	index;
+  uint32_t	type;
+  uint32_t	flags;
+  unsigned char	info;
 
-  if (ELF32_ST_BIND(symtab->st_info) == STB_GNU_UNIQUE)
+  index = symtab->st_shndx;
+  type = start[symtab->st_shndx].sh_type;
+  flags = start[symtab->st_shndx].sh_flags;
+  info = symtab->st_info;
+  if (ELF32_ST_BIND(info) == STB_GNU_UNIQUE)
      symbol = 'u';
-  if (ELF32_ST_BIND(symtab->st_info) == STB_WEAK)
-    symbol = symtab->st_shndx == SHN_UNDEF ? 'w' : 'W';
-  else if (ELF32_ST_BIND(symtab->st_info) == STB_WEAK &&
-	   ELF32_ST_TYPE(symtab->st_info))
-    symbol = symtab->st_shndx == SHN_UNDEF ? 'v' : 'V';
+  if (ELF32_ST_BIND(info) == STB_WEAK)
+    symbol = index == SHN_UNDEF ? 'w' : 'W';
+  else if (ELF32_ST_BIND(info) == STB_WEAK && ELF32_ST_TYPE(info))
+    symbol = index == SHN_UNDEF ? 'v' : 'V';
   else
-    symbol = get_global_flags32(symtab, start);
-  if (ELF32_ST_BIND(symtab->st_info) == STB_LOCAL && symbol != '?')
+    symbol = get_global_flags(index, type, flags);
+  if (ELF32_ST_BIND(info) == STB_LOCAL && symbol != '?')
     symbol += 32;
-  if ((start[symtab->st_shndx].sh_type == SHT_FINI_ARRAY ||
-       start[symtab->st_shndx].sh_type == SHT_INIT_ARRAY) &&
-      start[symtab->st_shndx].sh_flags == 3)
+  if ((type == SHT_FINI_ARRAY || type == SHT_INIT_ARRAY) && flags == 3)
+    symbol = 't';
+  return (symbol);
+}
+
+char	get_flag64(Elf64_Sym *symtab, Elf64_Shdr *start)
+{
+  char		symbol;
+  uint16_t	index;
+  uint32_t	type;
+  uint32_t	flags;
+  unsigned char	info;
+
+  index = symtab->st_shndx;
+  type = start[symtab->st_shndx].sh_type;
+  flags = start[symtab->st_shndx].sh_flags;
+  info = symtab->st_info;
+  if (ELF64_ST_BIND(info) == STB_GNU_UNIQUE)
+     symbol = 'u';
+  if (ELF64_ST_BIND(info) == STB_WEAK)
+    symbol = index == SHN_UNDEF ? 'w' : 'W';
+  else if (ELF64_ST_BIND(info) == STB_WEAK &&
+	   ELF64_ST_TYPE(info))
+    symbol = index == SHN_UNDEF ? 'v' : 'V';
+  else
+    symbol = get_global_flags(index, type, flags);
+  if (ELF64_ST_BIND(info) == STB_LOCAL && symbol != '?')
+    symbol += 32;
+  if ((type == SHT_FINI_ARRAY || type == SHT_INIT_ARRAY) && flags == 3)
     symbol = 't';
   return (symbol);
 }
