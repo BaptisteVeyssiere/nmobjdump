@@ -5,24 +5,28 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:45:00 2017 Baptiste Veyssiere
-** Last update Thu Feb 23 14:52:25 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 15:08:30 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
 
-static void	get_flags(Elf64_Ehdr *data)
+static uint32_t	get_flags(Elf64_Ehdr *data)
 {
+  uint32_t	flags;
+
+  flags = 0;
   if (data->e_type == ET_REL)
-    data->e_flags |= HAS_RELOC;
+    flags |= HAS_RELOC;
   else if (data->e_type == ET_EXEC)
-    data->e_flags |= EXEC_P;
+    flags |= EXEC_P;
   else if (data->e_type == ET_DYN)
-    data->e_flags |= DYNAMIC;
+    flags |= DYNAMIC;
 
   if (has_symtab64(data))
-    data->e_flags |= HAS_SYMS;
+    flags |= HAS_SYMS;
   if (has_paged64(data))
-    data->e_flags |= D_PAGED;
+    flags |= D_PAGED;
+  return (flags);
 }
 
 static void	print_string(unsigned int i, char *buffer, unsigned int *newline)
@@ -102,6 +106,7 @@ void	objdump64(void *data, char *filename)
 {
   Elf64_Ehdr	*header;
   char		*architecture;
+  uint32_t	flags;
 
   header = (Elf64_Ehdr*)data;
   if (!header)
@@ -112,10 +117,10 @@ void	objdump64(void *data, char *filename)
     architecture = "i386";
   else
     architecture = "notf";
-  get_flags(header);
+  flags = get_flags(header);
   printf("\n%s:     file format elf64-x86-64\n", filename);
-  printf("architecture: %s, flags 0x%08x:\n", architecture, header->e_flags);
-  print_flags(header->e_flags);
+  printf("architecture: %s, flags 0x%08x:\n", architecture, flags);
+  print_flags(flags);
   printf("start address 0x%016x\n\n", (int)header->e_entry);
   print_sections64(data);
 }

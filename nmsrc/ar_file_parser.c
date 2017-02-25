@@ -1,11 +1,11 @@
 /*
 ** ar_file_parser.c for nm in /home/veyssi_b/rendu/tek2/PSU/PSU_2016_nmobjdump/nmsrc
-** 
+**
 ** Made by Baptiste Veyssiere
 ** Login   <veyssi_b@epitech.net>
-** 
+**
 ** Started on  Thu Feb 23 14:02:14 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 02:08:35 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 15:34:45 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -15,7 +15,7 @@ static int	ar_nm(void *data, char *filename, char *bin)
   Elf32_Ehdr	*header;
 
   header = (Elf32_Ehdr*)data;
-  if (is_arfile(data, bin))
+  if (is_arfile(data, bin, 0, filename))
     return (0);
   else if (check_file(header, filename, bin))
     return (1);
@@ -60,7 +60,7 @@ static int	ar_file_reader(void *data, char *bin)
   int	size;
   char	end;
   char	*file;
-  
+
   end = 0;
   while (end == 0)
     {
@@ -78,7 +78,7 @@ static int	ar_file_reader(void *data, char *bin)
   return (1);
 }
 
-int	is_arfile(void *data, char *bin)
+int	is_arfile(void *data, char *bin, int multi, char *filename)
 {
   char	*magic_string;
   char	*string;
@@ -96,5 +96,7 @@ int	is_arfile(void *data, char *bin)
   if ((size = get_header_size(data)) < 1)
     return (0);
   data += 12 + size;
+  if (multi)
+    printf("\n%s:\n", filename);
   return (ar_file_reader(data, bin));
 }

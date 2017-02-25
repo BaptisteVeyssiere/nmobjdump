@@ -5,24 +5,28 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Wed Feb 22 17:03:37 2017 Baptiste Veyssiere
-** Last update Thu Feb 23 00:03:02 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 15:12:08 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
 
-static void	get_flags(Elf32_Ehdr *data)
+static uint32_t	get_flags(Elf32_Ehdr *data)
 {
+  uint32_t	flags;
+
+  flags = 0;
   if (data->e_type == ET_REL)
-    data->e_flags |= HAS_RELOC;
+    flags |= HAS_RELOC;
   else if (data->e_type == ET_EXEC)
-    data->e_flags |= EXEC_P;
+    flags |= EXEC_P;
   else if (data->e_type == ET_DYN)
-    data->e_flags |= DYNAMIC;
+    flags |= DYNAMIC;
 
   if (has_symtab32(data))
-    data->e_flags |= HAS_SYMS;
+    flags |= HAS_SYMS;
   if (has_paged32(data))
-    data->e_flags |= D_PAGED;
+    flags |= D_PAGED;
+  return (flags);
 }
 
 static void	print_string(unsigned int i, char *buffer, unsigned int *newline)
@@ -104,6 +108,7 @@ void	objdump32(void *data, char *filename)
 {
   Elf32_Ehdr	*header;
   char		*architecture;
+  uint32_t	flags;
 
   header = (Elf32_Ehdr*)data;
   if (!header)
@@ -114,10 +119,10 @@ void	objdump32(void *data, char *filename)
     architecture = "i386";
   else
     architecture = "notf";
-  get_flags(header);
+  flags = get_flags(header);
   printf("\n%s:     file format elf32-i386\n", filename);
-  printf("architecture: %s, flags 0x%08x:\n", architecture, header->e_flags);
-  print_flags(header->e_flags);
+  printf("architecture: %s, flags 0x%08x:\n", architecture, flags);
+  print_flags(flags);
   printf("start address 0x%08x\n\n", (int)header->e_entry);
   print_sections32(data);
 }

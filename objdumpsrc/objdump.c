@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:34:12 2017 Baptiste Veyssiere
-** Last update Fri Feb 24 00:25:38 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 15:02:38 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -34,23 +34,21 @@ void	print_flags(uint32_t flags)
 
 static void	*getdata(char *filename, char *bin)
 {
-  FILE	*file;
+  int	fd;
   long	fsize;
-  char	*buffer;
+  void	*buffer;
 
-  if (!(file = fopen(filename, "rb")))
+  if ((fd = open(filename, O_RDONLY)) == -1)
     {
       fprintf(stderr, "%s: '%s': No such file\n", bin, filename);
       return (NULL);
     }
-  if (fseek(file, 0, SEEK_END) == -1 ||
-      (fsize = ftell(file)) == -1 ||
-      fseek(file, 0, SEEK_SET) == -1 ||
-      !(buffer = malloc(fsize + 1)) ||
-      fread(buffer, fsize, 1, file) == 0 ||
-      fclose(file) == -1)
+  if ((fsize = lseek(fd, 0, SEEK_END)) == -1)
     return (NULL);
-  buffer[fsize] = 0;
+  if ((buffer = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fd, 0)) == MAP_FAILED)
+      return (NULL);
+  if (close(fd) == -1)
+    return (NULL);
   return (buffer);
 }
 

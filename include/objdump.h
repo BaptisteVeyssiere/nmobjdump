@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 15:34:06 2017 Baptiste Veyssiere
-** Last update Fri Feb 24 00:06:24 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 15:33:23 2017 Baptiste Veyssiere
 */
 
 #ifndef OBJDUMP_H_
@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/mman.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -22,7 +23,7 @@
 
 int	check_file(Elf32_Ehdr*, char*, char*);
 int	objdump(char*, char*);
-  
+
 void	objdump64(void*, char*);
 void	objdump32(void*, char*);
 

@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Sat Feb 25 02:22:10 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 02:26:01 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 15:15:39 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -110,9 +110,9 @@ static void	print_symbols(Elf32_Sym *symtab, char *strtab, Elf32_Ehdr *data, int
 	continue;
       flag = get_flag32(sorted_symtab[i], start);
       if (flag == 'U' || flag == 'w')
-	printf("%17c", ' ');
+	printf("%9c", ' ');
       else
-	printf("%016x ", sorted_symtab[i]->st_value);
+	printf("%08x ", sorted_symtab[i]->st_value);
       printf("%c %s\n", flag, name);
     }
 }

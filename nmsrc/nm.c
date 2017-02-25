@@ -5,30 +5,28 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 13:54:45 2017 Baptiste Veyssiere
-** Last update Fri Feb 24 00:52:05 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 15:22:13 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
 
 static void	*getdata(char *filename, char *bin)
 {
-  FILE	*file;
+  int	fd;
   long	fsize;
-  char	*buffer;
+  void	*buffer;
 
-  if (!(file = fopen(filename, "rb")))
+  if ((fd = open(filename, O_RDONLY)) == -1)
     {
       fprintf(stderr, "%s: '%s': No such file\n", bin, filename);
       return (NULL);
     }
-  if (fseek(file, 0, SEEK_END) == -1 ||
-      (fsize = ftell(file)) == -1 ||
-      fseek(file, 0, SEEK_SET) == -1 ||
-      !(buffer = malloc(fsize + 1)) ||
-      fread(buffer, fsize, 1, file) == 0 ||
-      fclose(file) == -1)
+  if ((fsize = lseek(fd, 0, SEEK_END)) == -1)
     return (NULL);
-  buffer[fsize] = 0;
+  if ((buffer = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fd, 0)) == MAP_FAILED)
+    return (NULL);
+  if (close(fd) == -1)
+    return (NULL);
   return (buffer);
 }
 
@@ -46,7 +44,7 @@ int	check_file(Elf32_Ehdr *header, char *file, char *bin)
   return (0);
 }
 
-int	nm(char *filename, char *bin)
+int	nm(char *filename, char *bin, int multi)
 {
   void		*data;
   Elf32_Ehdr	*header;
@@ -55,7 +53,7 @@ int	nm(char *filename, char *bin)
   if (!(data = getdata(filename, bin)))
     return (-1);
   header = (Elf32_Ehdr*)data;
-  if (is_arfile(data, bin))
+  if (is_arfile(data, bin, multi, filename))
     return (0); 
   else if (check_file(header, filename, bin))
     return (1);
@@ -72,6 +70,8 @@ int	nm(char *filename, char *bin)
 	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
 	  return (1);
 	}
+      if (multi)
+	printf("\n%s:\n", filename);
       nm32(data, filename, bin);
     }
   else if (header->e_ident[EI_CLASS] == ELFCLASS64)
@@ -87,6 +87,8 @@ int	nm(char *filename, char *bin)
 	  fprintf(stderr, "%s: %s: File truncated\n", bin, filename);
 	  return (1);
 	}
+      if (multi)
+	printf("\n%s:\n", filename);
       nm64(data, filename, bin);
     }
   return (0);
@@ -96,6 +98,7 @@ int	main(int ac, char **av)
 {
   int	ret;
   char	*bin;
+  int	multi;
 
   ret = 0;
   if (ac < 1)
@@ -104,11 +107,12 @@ int	main(int ac, char **av)
   setlocale(LC_ALL, "");
   if (ac > 1)
     {
+      multi = ac > 2 ? 1 : 0;
       for (int i = 1; i < ac; i++)
-	if (nm(av[i], bin) == -1)
+	if (nm(av[i], bin, multi) == -1)
 	  ret = 1;
     }
-  else if (nm("a.out", bin) == -1)
+  else if (nm("a.out", bin, 0) == -1)
     ret = 1;
   return (ret);
 }
