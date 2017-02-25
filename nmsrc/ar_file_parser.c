@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 14:02:14 2017 Baptiste Veyssiere
-** Last update Thu Feb 23 16:35:19 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 02:08:35 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -19,6 +19,7 @@ static int	ar_nm(void *data, char *filename, char *bin)
     return (0);
   else if (check_file(header, filename, bin))
     return (1);
+  printf("\n%s:\n", filename);
   if (header->e_ident[EI_CLASS] == ELFCLASS32)
     nm32(data, filename, bin);
   else if (header->e_ident[EI_CLASS] == ELFCLASS64)

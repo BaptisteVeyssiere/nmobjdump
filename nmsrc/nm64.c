@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 14:00:31 2017 Baptiste Veyssiere
-** Last update Fri Feb 24 01:17:33 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 01:55:25 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -101,7 +101,6 @@ void	print_symbols(Elf64_Sym *symtab, char *strtab, Elf64_Ehdr *data, int nbr)
 	sorted_symtab[++j] = &(symtab[i]);
     }
   nbr = j + 1;
-  printf("%d\n", nbr);
   sort_tab(sorted_symtab, strtab, nbr);
   
   for (int i = 0; i < nbr; i++)
@@ -109,7 +108,7 @@ void	print_symbols(Elf64_Sym *symtab, char *strtab, Elf64_Ehdr *data, int nbr)
       name = strtab + sorted_symtab[i]->st_name;
       if (name[0] == 0 || sorted_symtab[i]->st_info == STT_FILE)
 	continue;
-      flag = get_flag();
+      flag = get_flag64(sorted_symtab[i], start);
       if (flag == 'U' || flag == 'w')
 	printf("%17c", ' ');
       else

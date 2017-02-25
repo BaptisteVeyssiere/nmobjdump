@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 14:02:52 2017 Baptiste Veyssiere
-** Last update Fri Feb 24 00:52:16 2017 Baptiste Veyssiere
+** Last update Fri Feb 24 20:12:35 2017 Baptiste Veyssiere
 */
 
 #ifndef NM_H_
@@ -32,6 +32,6 @@ int	is_arfile(void*, char*);
 int	check_name64(Elf64_Ehdr*, char*);
 int	check_name32(Elf32_Ehdr*, char*);
 
-char	get_flag();
+char	get_flag64(Elf64_Sym*, Elf64_Shdr*);
 
 #endif /* !NM_H_ */
