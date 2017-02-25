@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 ** 
 ** Started on  Thu Feb 23 14:00:31 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 01:55:25 2017 Baptiste Veyssiere
+** Last update Sat Feb 25 02:26:16 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -80,7 +80,7 @@ static void	get_sections64(Elf64_Ehdr *data, Elf64_Shdr **strtab, Elf64_Shdr **s
     }
 }
 
-void	print_symbols(Elf64_Sym *symtab, char *strtab, Elf64_Ehdr *data, int nbr)
+static void	print_symbols(Elf64_Sym *symtab, char *strtab, Elf64_Ehdr *data, int nbr)
 {
   char		*name;
   char		flag;
@@ -131,7 +131,7 @@ void	nm64(void *data, char *filename, char *bin)
   get_sections64(data, &strtab, &symtab);
   if (strtab == NULL || symtab == NULL)
     {
-      fprintf(stderr, "%s: %s: no symbols\n", bin, filename);
+      fprintf(stdout, "%s: %s: no symbols\n", bin, filename);
       return ;
     }
   print_symbols((void*)data + symtab->sh_offset, (void*)data + strtab->sh_offset, data, symtab->sh_size / sizeof(Elf64_Sym));
