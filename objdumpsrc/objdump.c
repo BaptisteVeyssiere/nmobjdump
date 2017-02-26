@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Mon Feb 20 19:34:12 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 16:37:02 2017 Baptiste Veyssiere
+** Last update Sun Feb 26 19:16:41 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -54,6 +54,15 @@ static void	*getdata(char *filename, char *bin)
 
 int	check_file(Elf32_Ehdr *header, char *file, char *bin)
 {
+  if (header->e_ident[EI_MAG0] == 0 ||
+      header->e_ident[EI_MAG1] == 0 ||
+      header->e_ident[EI_MAG2] == 0 ||
+      header->e_ident[EI_MAG3] == 0 ||
+      header->e_type == 0)
+    {
+      fprintf(stderr, "%s: %s: File truncated\n", bin, file);
+      return (1);
+    }
   if (header->e_ident[EI_MAG0] != ELFMAG0 ||
       header->e_ident[EI_MAG1] != ELFMAG1 ||
       header->e_ident[EI_MAG2] != ELFMAG2 ||
