@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Thu Feb 23 14:02:14 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 23:14:30 2017 Baptiste Veyssiere
+** Last update Sun Feb 26 01:48:16 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -49,6 +49,8 @@ static char	*get_file_name(void *data)
 
   if (!(name = malloc(17)))
     return (NULL);
+  for (int i = 0; i < 17; i++)
+    name[i] = 0;
   for (int i = 0; i < 16 && ((char*)data)[i] != '/'; i++)
     {
       name[i] = ((char*)data)[i];

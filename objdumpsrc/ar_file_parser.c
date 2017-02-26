@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Wed Feb 22 21:05:20 2017 Baptiste Veyssiere
-** Last update Sat Feb 25 16:51:41 2017 Baptiste Veyssiere
+** Last update Sun Feb 26 01:49:00 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -48,6 +48,8 @@ static char	*get_file_name(void *data)
 
   if (!(name = malloc(17)))
     return (NULL);
+  for (int i = 0; i < 17; i++)
+    name[i] = 0;
   for (int i = 0; i < 16 && ((char*)data)[i] != '/'; i++)
     {
       name[i] = ((char*)data)[i];
