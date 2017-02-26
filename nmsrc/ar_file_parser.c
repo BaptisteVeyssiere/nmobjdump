@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Thu Feb 23 14:02:14 2017 Baptiste Veyssiere
-** Last update Sun Feb 26 01:48:16 2017 Baptiste Veyssiere
+** Last update Sun Feb 26 19:38:32 2017 Baptiste Veyssiere
 */
 
 #include "nm.h"
@@ -87,17 +87,22 @@ int	is_arfile(void *data, char *bin, int multi, char *filename)
   char	*magic_string;
   char	*string;
   int	size;
+  int	filesize;
+  int	fd;
 
   if (!data)
     return (0);
   magic_string = "!<arch>\n";
   string = (char*)data;
-
   for (int i = 0; i < 7; i++)
     if (magic_string[i] != string[i])
       return (0);
   data += 56;
-  if ((size = get_header_size(data)) < 1)
+  if ((fd = open(filename, O_RDONLY)) == -1 ||
+      (filesize = lseek(fd, 0, SEEK_END)) == -1 ||
+      close(fd) == -1)
+    return (0);
+  if ((size = get_header_size(data)) < 1 || size >= filesize)
     return (0);
   data += 12 + size;
   if (multi)

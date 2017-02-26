@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Wed Feb 22 21:05:20 2017 Baptiste Veyssiere
-** Last update Sun Feb 26 01:49:00 2017 Baptiste Veyssiere
+** Last update Sun Feb 26 19:38:48 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -86,6 +86,8 @@ int	is_arfile(void *data, char *filename, char *bin)
   char	*magic_string;
   char	*string;
   int	size;
+  int	fd;
+  int	filesize;
 
   if (!data)
     return (0);
@@ -97,7 +99,11 @@ int	is_arfile(void *data, char *filename, char *bin)
       return (0);
   printf("In archive %s:\n", filename);
   data += 56;
-  if ((size = get_header_size(data)) < 1)
+  if ((fd = open(filename, O_RDONLY)) == -1 ||
+      (filesize = lseek(fd, 0, SEEK_END)) == -1 ||
+      close(fd) == -1)
+    return (0);
+  if ((size = get_header_size(data)) < 1 || size >= filesize)
     return (0);
   data += 12 + size;
   return (ar_file_reader(data, bin));
