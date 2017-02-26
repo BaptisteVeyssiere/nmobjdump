@@ -5,7 +5,7 @@
 ** Login   <veyssi_b@epitech.net>
 **
 ** Started on  Wed Feb 22 21:05:20 2017 Baptiste Veyssiere
-** Last update Sun Feb 26 19:38:48 2017 Baptiste Veyssiere
+** Last update Sun Feb 26 20:48:28 2017 Baptiste Veyssiere
 */
 
 #include "objdump.h"
@@ -58,11 +58,13 @@ static char	*get_file_name(void *data)
   return (name);
 }
 
-static int	ar_file_reader(void *data, char *bin)
+static int	ar_file_reader(void *data, char *bin, char *filename)
 {
   int	size;
   char	end;
   char	*file;
+  int	filesize;
+  int	fd;
 
   end = 0;
   while (end == 0)
@@ -74,6 +76,10 @@ static int	ar_file_reader(void *data, char *bin)
 	return (0);
       data += 12;
       ar_objdump(data, file, bin);
+      if ((fd = open(filename, O_RDONLY)) == -1 ||
+	  (filesize = lseek(fd, 0, SEEK_END)) == -1 ||
+	  close(fd) == -1 || size >= filesize)
+	return (1);
       data += size;
       if (!data || !((char*)data)[0])
 	end = 1;
@@ -93,7 +99,6 @@ int	is_arfile(void *data, char *filename, char *bin)
     return (0);
   magic_string = "!<arch>\n";
   string = (char*)data;
-
   for (int i = 0; i < 7; i++)
     if (magic_string[i] != string[i])
       return (0);
@@ -106,5 +111,5 @@ int	is_arfile(void *data, char *filename, char *bin)
   if ((size = get_header_size(data)) < 1 || size >= filesize)
     return (0);
   data += 12 + size;
-  return (ar_file_reader(data, bin));
+  return (ar_file_reader(data, bin, filename));
 }
